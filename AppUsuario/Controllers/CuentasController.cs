@@ -7,13 +7,22 @@ namespace AppUsuario.Controllers
 {
     public class CuentasController : Controller
     {
+        //NICE
         //Inyeccion de dependencias
-        private readonly UserManager<IdentityUser>? _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        public CuentasController(UserManager<IdentityUser>? userManager, SignInManager<IdentityUser> signInManager)
+        
+        public CuentasController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+        }
+        //NICE
+        [HttpGet]
+        public async Task<IActionResult> Registro()
+        {
+            RegistroVM registroVM = new RegistroVM();
+            return View(registroVM);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -44,9 +53,9 @@ namespace AppUsuario.Controllers
                 }
                 ValidarErrores(resultado);
             }
-
             return View(registroVM);
         }
+        //NICE
         private void ValidarErrores(IdentityResult resultado)
         {
             foreach(var error in resultado.Errors)
@@ -54,11 +63,13 @@ namespace AppUsuario.Controllers
                 ModelState.AddModelError(String.Empty, error.Description);
             }
         }
+        //NICE
         [HttpGet]
         public IActionResult Acceso()
         {
             return View();
         }
+        //NICE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult>Acceso(AccesoVM accesoVM)
@@ -86,12 +97,10 @@ namespace AppUsuario.Controllers
         {
             return View();
         }
-        [HttpGet]
-        public async Task<IActionResult> Registro()
-        {
-            RegistroVM registroVM = new RegistroVM();
-            return View(registroVM);
-        }
+        
+        //NICE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SalirAplicacion()
         {
             //SALE DE LA APLICACION Y DESTRUYE LAS COOKIES

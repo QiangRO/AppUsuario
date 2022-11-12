@@ -3,6 +3,7 @@
 
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+
 <ul class="navbar-nav ml-auto">
     <!--USUARIO AUTENTICADO-->
     @if(SignInManager.IsSignedIn(User))

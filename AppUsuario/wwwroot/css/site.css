@@ -3,22 +3,22 @@ html {
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 input#datepicker {
     text-align: center;
-    background-image: url("../imagenes/X-office-calendar.svg");
+    /*background-image: url("../imagenes/X-office-calendar.svg");*/
     background-position: right center;
     background-repeat: no-repeat;
     padding-right: 18px;
