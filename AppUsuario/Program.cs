@@ -11,6 +11,14 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkSto
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequiredLength = 5;
+    options.Password.RequireLowercase= true;
+    options.Lockout.DefaultLockoutTimeSpan= TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts= 3;
+});
+ 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -79,10 +79,14 @@ namespace AppUsuario.Controllers
                 var resultado = await _signInManager.PasswordSignInAsync(accesoVM.Email,
                     accesoVM.Password,
                     accesoVM.RememberMe,
-                    lockoutOnFailure: false);
+                    lockoutOnFailure: true);
                 if (resultado.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
+                }
+                if (resultado.IsLockedOut)
+                {
+                    return View("Bloqueada");
                 }
                 else
                 {
@@ -107,6 +111,11 @@ namespace AppUsuario.Controllers
             await _signInManager.SignOutAsync();
             //REDIRECCIONA A LA PAGINA DE INICIO
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+        [HttpGet]
+        public IActionResult OlvidoContraseña()
+        {
+            return View();
         }
     }
 }
