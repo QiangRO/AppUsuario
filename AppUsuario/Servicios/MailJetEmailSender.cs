@@ -9,6 +9,7 @@ namespace AppUsuario.Servicios
     public class MailJetEmailSender : IEmailSender
     {
         private readonly IConfiguration _configuration;
+        private readonly OpcionesMailJet _opcionesMailJet;
         
         public MailJetEmailSender(IConfiguration configuration)
         {
@@ -17,7 +18,9 @@ namespace AppUsuario.Servicios
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            MailjetClient client = new MailjetClient(Environment.GetEnvironmentVariable("****************************1234"), Environment.GetEnvironmentVariable("****************************abcd"))
+            _opcionesMailJet = _configuration.GetSection("MailJet").Get<OpcionesMailJet>();
+
+            MailjetClient client = new MailjetClient(_opcionesMailJet.AppKey, _opcionesMailJet.SecretKey)
             {
                 Version = ApiVersion.V3_1,
             };
@@ -25,15 +28,13 @@ namespace AppUsuario.Servicios
             {
                 Resource = Send.Resource,
             }
-            .Property(Send.Messages, new JArray 
-            {
-                new JObject
-                {
-                    {
+             .Property(Send.Messages, new JArray {
+     new JObject {
+      {
        "From",
        new JObject {
-        {"Email", "aroch2222@gmail.com"},
-        {"Name", "Alejandro"}
+        {"Email", "appusuariozoho@zohomail.com"},
+        {"Name", "Alex"}
        }
       }, {
        "To",
@@ -41,28 +42,22 @@ namespace AppUsuario.Servicios
         new JObject {
          {
           "Email",
-          "aroch2222@gmail.com"
+          email
          }, {
           "Name",
-          "Alejandro"
+          "Alex"
          }
         }
        }
       }, {
        "Subject",
-       "Greetings from Mailjet."
-      }, {
-       "TextPart",
-       "My first Mailjet email"
+       subject
       }, {
        "HTMLPart",
-       "<h3>Dear passenger 1, welcome to <a href='https://www.mailjet.com/'>Mailjet</a>!</h3><br />May the delivery force be with you!"
-      }, {
-       "CustomID",
-       "AppGettingStartedTest"
+       htmlMessage
       }
-                }
-            });
+     }
+             });
             await client.PostAsync(request);
         }
     }
