@@ -1,6 +1,8 @@
 ﻿using AppUsuario.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppUsuario.Controllers
@@ -11,11 +13,14 @@ namespace AppUsuario.Controllers
         //Inyeccion de dependencias
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        
-        public CuentasController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        private readonly IEmailSender _emailSender;
+
+        public CuentasController(UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
         //NICE
         [HttpGet]
@@ -35,7 +40,7 @@ namespace AppUsuario.Controllers
                     UserName = registroVM.Email,
                     Email = registroVM.Email,
                     Nombre = registroVM.Nombre,
-                    Url= registroVM.Url,
+                    Url = registroVM.Url,
                     CodigoPais = registroVM.CodigoPais,
                     Telefono = registroVM.Telefono,
                     Pais = registroVM.Pais,
@@ -58,7 +63,7 @@ namespace AppUsuario.Controllers
         //NICE
         private void ValidarErrores(IdentityResult resultado)
         {
-            foreach(var error in resultado.Errors)
+            foreach (var error in resultado.Errors)
             {
                 ModelState.AddModelError(String.Empty, error.Description);
             }
@@ -72,7 +77,7 @@ namespace AppUsuario.Controllers
         //NICE
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult>Acceso(AccesoVM accesoVM)
+        public async Task<IActionResult> Acceso(AccesoVM accesoVM)
         {
             if (ModelState.IsValid)
             {
@@ -101,7 +106,7 @@ namespace AppUsuario.Controllers
         {
             return View();
         }
-        
+
         //NICE
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -114,6 +119,37 @@ namespace AppUsuario.Controllers
         }
         [HttpGet]
         public IActionResult OlvidoContraseña()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult OlvidoPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> OlvidoPassword(OlvidoPasswordVM olvidoPasswordVM)
+        {
+            if (ModelState.IsValid)
+            {
+                var usuario = await _userManager.FindByEmailAsync(olvidoPasswordVM.Email);
+                if (usuario != null)
+                {
+                    return RedirectToAction("ConfirmarOlvidoPassword");
+                }
+                var codigo = await _userManager.GeneratePasswordResetTokenAsync(usuario);
+                var urlRetorno = Url.Action("ResetPassword", "Cuentas",
+                    new { userId = usuario.Id, code = codigo }, protocol: HttpContext.Request.Scheme);
+
+                await _emailSender.SendEmailAsync(olvidoPasswordVM.Email, "Resetear contraseña - Proyecto Identity",
+                    "Por favor recupere su contraseña haciendo click en el siguiente enlace: <a href=\"" + urlRetorno + "\">link</a>");
+                return RedirectToAction("ConfirmacionOlvidoPassword");
+            }
+            return View(olvidoPasswordVM);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ConfirmacionOlvidoPassword()
         {
             return View();
         }

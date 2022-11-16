@@ -9,7 +9,7 @@ namespace AppUsuario.Servicios
     public class MailJetEmailSender : IEmailSender
     {
         private readonly IConfiguration _configuration;
-        private readonly OpcionesMailJet _opcionesMailJet;
+        private OpcionesMailJet _opcionesMailJet;
         
         public MailJetEmailSender(IConfiguration configuration)
         {
